@@ -6,24 +6,24 @@ set(CMAKE_CXX_STANDARD 17)
 if (MSVC)
   add_compile_options(/W4 /O2 /Ot /Ox /Ob2 /Oy /Oi)
 else()
-  add_compile_options(-Wall -Wextra -Wpedantic -std=c++17 -O3 -Ofast)
+  add_compile_options(-Wall -Wextra -Wpedantic -O3 -Ofast)
 endif()
 
 include(CTest)
 enable_testing()
 
 set(headers   
-  include/catch.hpp
-  include/stl_helper_functions.hpp
-  include/big_integer.h
+	include/catch.hpp
+	include/stl_helper_functions.hpp
+	include/big_integer.h
 )
 
 set(sources_library
-src/big_integer.cpp
+	src/big_integer.cpp
 )
 
 set(sources_test
-test/main_catch_tests.cpp
+	test/main_catch_tests.cpp
 )
 
 add_library(bi_lib OBJECT ${sources_library})

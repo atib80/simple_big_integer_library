@@ -550,7 +550,7 @@ big_integer::operator std::string() const noexcept
 
 big_integer::operator const char *() const noexcept
 {
-  return this->get_big_integer(number_base::decimal).c_str();
+  return this->decimal_number_str_.c_str();
 }
 
 big_integer big_integer::operator-() const

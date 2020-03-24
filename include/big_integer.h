@@ -119,9 +119,9 @@ namespace atib {
 
       std::string get_big_integer(const number_base base = number_base::decimal) const;
 
-      operator std::string() const noexcept;
+      explicit operator std::string() const noexcept;
 
-      operator const char *() const noexcept;
+      explicit operator const char *() const noexcept;
 
       big_integer operator-() const;
 

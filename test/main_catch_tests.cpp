@@ -28,36 +28,29 @@ using namespace stl::helper;
 using namespace org::atib::numerics;
 
 static constexpr const int64_t min_value_int64_t{
-        std::numeric_limits<int64_t>::min()
-};
+        std::numeric_limits<int64_t>::min()};
 static constexpr const int64_t max_value_int64_t{
-        std::numeric_limits<int64_t>::max()
-};
+        std::numeric_limits<int64_t>::max()};
 
 static constexpr const double min_value_double{
-        std::numeric_limits<double>::min()
-};
+        std::numeric_limits<double>::min()};
 static constexpr const double max_value_double{
-        std::numeric_limits<double>::max()
-};
+        std::numeric_limits<double>::max()};
 
 static mt19937 rand_engine{
-        static_cast<unsigned>(steady_clock::now().time_since_epoch().count())
-};
+        static_cast<unsigned>(steady_clock::now().time_since_epoch().count())};
 
 static unordered_map<number_base, unsigned> number_base_multiplier{
         {number_base::binary,      2},
         {number_base::octal,       8},
         {number_base::decimal,     10},
-        {number_base::hexadecimal, 16}
-};
+        {number_base::hexadecimal, 16}};
 
 static unordered_map<number_base, const char *> number_base_name{
         {number_base::binary,      "binary"},
         {number_base::octal,       "octal"},
         {number_base::decimal,     "decimal"},
-        {number_base::hexadecimal, "hexadecimal"}
-};
+        {number_base::hexadecimal, "hexadecimal"}};
 
 int get_random_digit_for_specified_number_base(
         const number_base base,
@@ -89,14 +82,16 @@ int get_random_digit_for_specified_number_base(
     return 0;
 }
 
-int64_t get_random_integral_value(const int64_t lower_bound = min_value_int64_t,
-                                  const int64_t upper_bound = max_value_int64_t) {
+int64_t get_random_integral_value(
+        const int64_t lower_bound = min_value_int64_t,
+        const int64_t upper_bound = max_value_int64_t) {
     return uniform_int_distribution<int64_t>{lower_bound,
                                              upper_bound}(rand_engine);
 }
 
-double get_random_floating_point_value(const double lower_bound = min_value_double,
-                                       const double upper_bound = max_value_double) {
+double get_random_floating_point_value(
+        const double lower_bound = min_value_double,
+        const double upper_bound = max_value_double) {
     return uniform_real_distribution<double>{lower_bound,
                                              upper_bound}(rand_engine);
 }
@@ -117,16 +112,19 @@ number_base get_random_number_base() {
     }
 }
 
-static constexpr const char *number_base_digits{"0123456789ABCDEF"};
+static constexpr const size_t number_of_tests{10U};
+static constexpr const array<const char, 17U> number_base_digits{
+        {"0123456789ABCDEF"}};
 
 std::string dec2bin(const int64_t number) {
-
-    if (0 == number) return "0b0";
+    if (0 == number)
+        return "0b0";
 
     std::string binary_string{};
     binary_string.reserve(65U + (number < 0 ? 1U : 0U));
 
-    if (number < 0) binary_string.push_back('-');
+    if (number < 0)
+        binary_string.push_back('-');
     binary_string.append("0b");
 
     const uint64_t abs_number = std::abs(number);
@@ -136,7 +134,6 @@ std::string dec2bin(const int64_t number) {
     bool found_first_non_zero_digit{};
 
     while (bit_mask != 0U) {
-
         const uint64_t and_result{abs_number & bit_mask};
         if ((and_result != 0U) || found_first_non_zero_digit) {
             binary_string.push_back(and_result != 0U ? '1' : '0');
@@ -149,13 +146,14 @@ std::string dec2bin(const int64_t number) {
 }
 
 std::string dec2oct(const int64_t number) {
-
-    if (0 == number) return "0o0";
+    if (0 == number)
+        return "0o0";
 
     std::string octal_string{};
     octal_string.reserve(65U + (number < 0 ? 1U : 0U));
 
-    if (number < 0) octal_string.push_back('-');
+    if (number < 0)
+        octal_string.push_back('-');
     octal_string.append("0o");
 
     const uint64_t abs_number = std::abs(number);
@@ -166,11 +164,10 @@ std::string dec2oct(const int64_t number) {
     size_t shift_count{60U};
 
     while (bit_mask != 0U) {
-
         const uint64_t and_result = (abs_number & bit_mask) >> shift_count;
         if ((and_result != 0U) || found_first_non_zero_digit) {
             assert(and_result < 8U);
-            octal_string.push_back(number_base_digits[and_result]);
+            octal_string.push_back(number_base_digits.at(and_result));
             found_first_non_zero_digit = true;
         }
         bit_mask >>= 3U;
@@ -181,13 +178,14 @@ std::string dec2oct(const int64_t number) {
 }
 
 std::string dec2hex(int64_t number) {
-
-    if (0 == number) return "0x0";
+    if (0 == number)
+        return "0x0";
 
     std::string hexadecimal_string{};
     hexadecimal_string.reserve(65U + (number < 0 ? 1U : 0U));
 
-    if (number < 0) hexadecimal_string.push_back('-');
+    if (number < 0)
+        hexadecimal_string.push_back('-');
     hexadecimal_string.append("0x");
 
     const uint64_t abs_number = std::abs(number);
@@ -198,13 +196,11 @@ std::string dec2hex(int64_t number) {
     size_t shift_count{60U};
 
     while (bit_mask != 0U) {
-
         const uint64_t and_result = (abs_number & bit_mask) >> shift_count;
 
         if ((and_result != 0U) || found_first_non_zero_digit) {
-
             assert(and_result < 16U);
-            hexadecimal_string.push_back(number_base_digits[and_result]);
+            hexadecimal_string.push_back(number_base_digits.at(and_result));
             found_first_non_zero_digit = true;
         }
         bit_mask >>= 4U;
@@ -293,24 +289,21 @@ TEST_CASE(
     REQUIRE(bi8.get_hexadecimal_number() == "0xA4"s);
 
     const int64_t random_number1{
-            get_random_integral_value(min_value_int64_t, max_value_int64_t)
-    };
+            get_random_integral_value(min_value_int64_t, max_value_int64_t)};
     org::atib::numerics::big_integer bi9{random_number1};
     const auto &bi9_dec_str{bi9.get_decimal_number()};
     const auto random_number1_dec_str{std::to_string(random_number1)};
     REQUIRE(bi9_dec_str == random_number1_dec_str);
 
     const int64_t random_number2{
-            get_random_integral_value(min_value_int64_t, max_value_int64_t)
-    };
+            get_random_integral_value(min_value_int64_t, max_value_int64_t)};
     org::atib::numerics::big_integer bi10{random_number2};
     const auto &bi10_dec_str{bi10.get_decimal_number()};
     const auto random_number2_dec_str{std::to_string(random_number2)};
     REQUIRE(bi10_dec_str == random_number2_dec_str);
 
     const int64_t random_number3{
-            get_random_integral_value(min_value_int64_t, max_value_int64_t)
-    };
+            get_random_integral_value(min_value_int64_t, max_value_int64_t)};
     org::atib::numerics::big_integer bi11{random_number3};
     const auto &bi11_dec_str{bi11.get_decimal_number()};
     const auto random_number3_dec_str{std::to_string(random_number3)};
@@ -325,14 +318,12 @@ TEST_CASE(
         "Testing big_integer's parameterized explicit constructor: explicit "
         "big_integer(const NumberType)") {
     const int64_t random_number1{
-            get_random_integral_value(min_value_int64_t, max_value_int64_t)
-    };
+            get_random_integral_value(min_value_int64_t, max_value_int64_t)};
     org::atib::numerics::big_integer bi1{random_number1};
     REQUIRE(bi1.get_decimal_number() == std::to_string(random_number1));
 
     const double random_number2{
-            get_random_floating_point_value(min_value_double, max_value_double)
-    };
+            get_random_floating_point_value(min_value_double, max_value_double)};
     org::atib::numerics::big_integer bi2{random_number2};
     std::string value{std::to_string(random_number2)};
     const size_t dot_pos{value.rfind('.')};
@@ -349,8 +340,7 @@ TEST_CASE(
         "big_integer(std::vector<int>, const number_base = number_base::decimal)") {
     for (size_t i{}; i < 10; ++i) {
         const size_t digit_count{
-                static_cast<size_t>(get_random_integral_value(5, 10))
-        };
+                static_cast<size_t>(get_random_integral_value(5, 10))};
         std::vector<int> digits{};
         digits.reserve(digit_count);
 
@@ -391,8 +381,7 @@ TEST_CASE(
 TEST_CASE("explicit big_integer(std::vector<bool>)",
           "Testing big_integer(std::vector<bool>) constructor") {
     org::atib::numerics::big_integer bi1{
-            std::vector<bool>{true, false, true, false}
-    };
+            std::vector<bool>{true, false, true, false}};
 
     REQUIRE(bi1.get_binary_number() == "0b1010");
     REQUIRE(bi1.get_decimal_number() == "10");
@@ -400,8 +389,7 @@ TEST_CASE("explicit big_integer(std::vector<bool>)",
     REQUIRE(bi1.get_hexadecimal_number() == "0xA");
 
     org::atib::numerics::big_integer bi2{
-            std::vector<bool>{true, true, true, true, false, true, false}
-    };
+            std::vector<bool>{true, true, true, true, false, true, false}};
 
     REQUIRE(bi2.get_binary_number() == "0b1111010");
     REQUIRE(bi2.get_decimal_number() == "122");
@@ -409,8 +397,7 @@ TEST_CASE("explicit big_integer(std::vector<bool>)",
     REQUIRE(bi2.get_hexadecimal_number() == "0x7A");
 
     org::atib::numerics::big_integer bi3{
-            std::vector<bool>{false, true, true, true, true, false, true, false}
-    };
+            std::vector<bool>{false, true, true, true, true, false, true, false}};
 
     REQUIRE(bi3.get_binary_number() == "0b1111010");
     REQUIRE(bi3.get_decimal_number() == "122");
@@ -419,8 +406,7 @@ TEST_CASE("explicit big_integer(std::vector<bool>)",
 
     for (size_t i{}; i < 10; ++i) {
         const size_t digit_count{
-                static_cast<size_t>(get_random_integral_value(32, 64))
-        };
+                static_cast<size_t>(get_random_integral_value(32, 64))};
         std::vector<bool> digits{};
         digits.reserve(digit_count);
 
@@ -444,17 +430,18 @@ TEST_CASE("explicit big_integer(std::vector<bool>)",
 }
 
 TEST_CASE("void reset(const std::string&)",
-          "Testing the correct functionality of void reset(const str::string& number") {
+          "Testing the correct functionality of void reset(const str::string& "
+          "number") {
     for (size_t i{}; i < 10; ++i) {
         const size_t digit_count{
-                static_cast<size_t>(get_random_integral_value(10, 30))
-        };
+                static_cast<size_t>(get_random_integral_value(10, 30))};
         std::string number{};
         number.reserve(digit_count + 3);
 
         const number_base base = get_random_number_base();
 
-        if (0 == get_random_digit_for_specified_number_base(number_base::binary, false))
+        if (0 ==
+            get_random_digit_for_specified_number_base(number_base::binary, false))
             number.push_back('-');
 
         number.append(big_integer::number_base_prefix_.at(base));
@@ -464,14 +451,15 @@ TEST_CASE("void reset(const std::string&)",
             first_digit = get_random_digit_for_specified_number_base(base, false);
         } while (first_digit == 0);
 
-        number.push_back(number_base_digits[first_digit]);
+        number.push_back(number_base_digits.at(first_digit));
 
         for (size_t j{1}; j < digit_count; ++j) {
-
-            number.push_back(number_base_digits[get_random_digit_for_specified_number_base(base, false)]);
+            number.push_back(number_base_digits.at(
+                    get_random_digit_for_specified_number_base(base, false)));
         }
 
-        const int64_t random_number{get_random_integral_value(min_value_int64_t, max_value_int64_t)};
+        const int64_t random_number{
+                get_random_integral_value(min_value_int64_t, max_value_int64_t)};
         const string random_number_str{std::to_string(random_number)};
 
         org::atib::numerics::big_integer bi1{random_number};
@@ -508,60 +496,25 @@ TEST_CASE("void reset(const std::string&)",
     }
 }
 
-TEST_CASE("number_base::get_number_base() const noexcept",
-          "Testing number_base big_integer::get_number_base() public method") {
-
-    const size_t number_of_tests{10U};
-    for (size_t i{}; i < number_of_tests; ++i) {
-        const size_t digit_count{
-                static_cast<size_t>(get_random_integral_value(5, 50))
-        };
-        std::string number{};
-        number.reserve(digit_count + 3);
-
-        const number_base base = get_random_number_base();
-
-        if (0 == get_random_digit_for_specified_number_base(number_base::binary, false))
-            number.push_back('-');
-
-        number.append(big_integer::number_base_prefix_.at(base));
-
-        int first_digit{};
-        do {
-            first_digit = get_random_digit_for_specified_number_base(base, false);
-        } while (first_digit == 0);
-
-        number.push_back(number_base_digits[first_digit]);
-
-        for (size_t j{1}; j < digit_count; ++j) {
-
-            number.push_back(number_base_digits[get_random_digit_for_specified_number_base(base, false)]);
-        }
-
-        org::atib::numerics::big_integer bi{number};
-
-        REQUIRE(bi.get_number_base() == base);
-    }
-}
-
 TEST_CASE("string big_integer::get_big_integer() const",
           "Testing string big_integer::get_big_integer() const public method") {
-    const size_t number_of_tests{10U};
     for (size_t i{}; i < number_of_tests; ++i) {
         const int64_t random_number{get_random_integral_value()};
 
         org::atib::numerics::big_integer bi{random_number};
 
-        REQUIRE(bi.get_big_integer(number_base::decimal) == std::to_string(random_number));
+        REQUIRE(bi.get_big_integer(number_base::decimal) ==
+                std::to_string(random_number));
         REQUIRE(bi.get_big_integer(number_base::binary) == dec2bin(random_number));
         REQUIRE(bi.get_big_integer(number_base::octal) == dec2oct(random_number));
-        REQUIRE(bi.get_big_integer(number_base::hexadecimal) == dec2hex(random_number));
+        REQUIRE(bi.get_big_integer(number_base::hexadecimal) ==
+                dec2hex(random_number));
     }
 }
 
 TEST_CASE("big_integer::operator std::string() const noexcept",
-          "Testing big_integer's explicit operator std::string() const noexcept public method") {
-    const size_t number_of_tests{10U};
+          "Testing big_integer's explicit operator std::string() const "
+          "noexcept public method") {
     for (size_t i{}; i < number_of_tests; ++i) {
         const int64_t random_number{get_random_integral_value()};
 
@@ -570,14 +523,31 @@ TEST_CASE("big_integer::operator std::string() const noexcept",
         const std::string bi_decimal_number1 = static_cast<std::string>(bi);
         const std::string bi_decimal_number2{bi};
 
-        REQUIRE(bi_decimal_number1 == std::to_string(random_number));
-        REQUIRE(bi_decimal_number2 == std::to_string(random_number));
+        const std::string random_number_str{std::to_string(random_number)};
+
+        REQUIRE(bi_decimal_number1 == random_number_str);
+        REQUIRE(bi_decimal_number2 == random_number_str);
+
+        const double random_double_value{get_random_floating_point_value()};
+
+        std::string random_double_value_str{std::to_string(random_double_value)};
+        random_double_value_str.erase(std::cbegin(random_double_value_str) +
+                                      random_double_value_str.find('.'),
+                                      std::cend(random_double_value_str));
+
+        org::atib::numerics::big_integer bi2{random_double_value};
+
+        const std::string bi_decimal_number3 = static_cast<std::string>(bi2);
+        const std::string bi_decimal_number4{bi2};
+
+        REQUIRE(random_double_value_str == bi_decimal_number3);
+        REQUIRE(random_double_value_str == bi_decimal_number4);
     }
 }
 
 TEST_CASE("big_integer::operator const char *() const noexcept",
-          "Testing big_integer's explicit operator const char *() const noexcept public method") {
-    const size_t number_of_tests{10U};
+          "Testing big_integer's explicit operator const char *() const "
+          "noexcept public method") {
     for (size_t i{}; i < number_of_tests; ++i) {
         const int64_t random_number{get_random_integral_value()};
 
@@ -585,15 +555,31 @@ TEST_CASE("big_integer::operator const char *() const noexcept",
 
         const char *bi_decimal_number1 = static_cast<const char *>(bi);
         const char *bi_decimal_number2{bi};
+
         const std::string random_number_str{std::to_string(random_number)};
 
         REQUIRE(random_number_str == bi_decimal_number1);
         REQUIRE(random_number_str == bi_decimal_number2);
+
+        const double random_double_value{get_random_floating_point_value()};
+
+        std::string random_double_value_str{std::to_string(random_double_value)};
+        random_double_value_str.erase(std::cbegin(random_double_value_str) +
+                                      random_double_value_str.find('.'),
+                                      std::cend(random_double_value_str));
+
+        org::atib::numerics::big_integer bi2{random_double_value};
+
+        const char *bi_decimal_number3 = static_cast<const char *>(bi2);
+        const char *bi_decimal_number4{bi2};
+
+        REQUIRE(random_double_value_str == bi_decimal_number3);
+        REQUIRE(random_double_value_str == bi_decimal_number4);
     }
 }
 
-TEST_CASE("big_integer::operator-() const", "Testing big_integer's operator-() const public method") {
-    const size_t number_of_tests{10U};
+TEST_CASE("big_integer::operator-() const",
+          "Testing big_integer's operator-() const public method") {
     for (size_t i{}; i < number_of_tests; ++i) {
         int64_t random_number{get_random_integral_value()};
 
@@ -609,21 +595,257 @@ TEST_CASE("big_integer::operator-() const", "Testing big_integer's operator-() c
 
         REQUIRE(random_number_str == bi.get_decimal_number());
         REQUIRE(bi.is_negative_number() == (random_number < 0));
+
+        double random_double_value{get_random_floating_point_value()};
+
+        std::string random_double_value_str{std::to_string(random_double_value)};
+        random_double_value_str.erase(std::cbegin(random_double_value_str) +
+                                      random_double_value_str.find('.'),
+                                      std::cend(random_double_value_str));
+
+        org::atib::numerics::big_integer bi2{random_double_value};
+
+        REQUIRE(random_double_value_str == bi2.get_decimal_number());
+        REQUIRE(bi2.is_negative_number() == (random_double_value < 0));
+
+        bi2 = -bi2;
+        random_double_value = -random_double_value;
+        random_double_value_str = std::to_string(random_double_value);
+        random_double_value_str.erase(std::cbegin(random_double_value_str) +
+                                      random_double_value_str.find('.'),
+                                      std::cend(random_double_value_str));
+
+        REQUIRE(random_double_value_str == bi2.get_decimal_number());
+        REQUIRE(bi2.is_negative_number() == (random_double_value < 0));
     }
 }
 
+TEST_CASE(
+        "big_integer& operator+=(const big_integer&)",
+        "Testing big_integer's operator+=(const big_integer&) public method") {
+
+    const int64_t lower_limit{-(1LL << 31)};
+    const int64_t upper_limit{(1LL << 31) - 1};
+    for (size_t i{}; i < number_of_tests; ++i) {
+        int64_t first_operand{get_random_integral_value(lower_limit, upper_limit)};
+        const int64_t second_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+
+        big_integer bi1{first_operand};
+        big_integer bi2{second_operand};
+
+        bi1 += bi2;
+
+        first_operand += second_operand;
+
+        const std::string random_number_str{std::to_string(first_operand)};
+        REQUIRE(random_number_str == bi1.get_decimal_number());
+    }
+}
+
+TEST_CASE(
+        "big_integer& operator-=(const big_integer&)",
+        "Testing big_integer's operator-=(const big_integer&) public method") {
+
+    const int64_t lower_limit{-(1LL << 31)};
+    const int64_t upper_limit{(1LL << 31) - 1};
+    for (size_t i{}; i < number_of_tests; ++i) {
+        int64_t first_operand{get_random_integral_value(lower_limit, upper_limit)};
+        const int64_t second_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+
+        big_integer bi1{first_operand};
+        big_integer bi2{second_operand};
+
+        bi1 -= bi2;
+
+        first_operand -= second_operand;
+
+        const std::string random_number_str{std::to_string(first_operand)};
+        REQUIRE(random_number_str == bi1.get_decimal_number());
+    }
+}
+
+TEST_CASE(
+        "big_integer& operator*=(const big_integer&)",
+        "Testing big_integer's operator*=(const big_integer&) public method") {
+    const int64_t lower_limit{-(1LL << 24)};
+    const int64_t upper_limit{(1LL << 24) - 1};
+
+    for (size_t i{}; i < number_of_tests; ++i) {
+        int64_t first_operand{get_random_integral_value(lower_limit, upper_limit)};
+        const int64_t second_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+
+        big_integer bi1{first_operand};
+        big_integer bi2{second_operand};
+
+        bi1 *= bi2;
+
+        first_operand *= second_operand;
+
+        const std::string random_number_str{std::to_string(first_operand)};
+        REQUIRE(random_number_str == bi1.get_decimal_number());
+    }
+}
+
+TEST_CASE(
+        "big_integer& operator/=(const big_integer&)",
+        "Testing big_integer's operator/=(const big_integer&) public method") {
+    const int64_t lower_limit{-(1LL << 31)};
+    const int64_t upper_limit{(1LL << 31) - 1};
+    for (size_t i{}; i < number_of_tests; ++i) {
+        int64_t first_operand{get_random_integral_value(lower_limit, upper_limit)};
+        const int64_t second_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+
+        big_integer bi1{first_operand};
+        big_integer bi2{second_operand};
+
+        bi1 /= bi2;
+
+        first_operand /= second_operand;
+
+        const std::string random_number_str{std::to_string(first_operand)};
+        REQUIRE(random_number_str == bi1.get_decimal_number());
+    }
+}
+
+TEST_CASE(
+        "big_integer& operator%=(const big_integer&)",
+        "Testing big_integer's operator%=(const big_integer&) public method") {
+    const uint64_t lower_limit{};
+    const uint64_t upper_limit{1LL << 32};
+    for (size_t i{}; i < number_of_tests; ++i) {
+        uint64_t first_operand =
+                get_random_integral_value(lower_limit, upper_limit);
+        const uint64_t second_operand =
+                get_random_integral_value(lower_limit, upper_limit);
+
+        big_integer bi1{first_operand};
+        const big_integer bi2{second_operand};
+
+        bi1 %= bi2;
+
+        first_operand %= second_operand;
+
+        const std::string remainder_str{std::to_string(first_operand)};
+        REQUIRE(remainder_str == bi1.get_decimal_number());
+    }
+}
+
+TEST_CASE("big_integer operator+(const big_integer&, const big_integer&)",
+          "Testing expected corerct functionality of the globally defined "
+          "addition operator.") {
+    const int64_t lower_limit{-(1LL << 31)};
+    const int64_t upper_limit{(1LL << 31) - 1};
+    for (size_t i{}; i < number_of_tests; ++i) {
+        const int64_t first_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+        const int64_t second_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+
+        const big_integer bi1{first_operand};
+        const big_integer bi2{second_operand};
+
+        const big_integer bi_sum{bi1 + bi2};
+
+        const int64_t sum{first_operand + second_operand};
+
+        const std::string sum_str{std::to_string(sum)};
+        REQUIRE(sum_str == bi_sum.get_decimal_number());
+    }
+}
+
+TEST_CASE("big_integer operator-(const big_integer&, const big_integer&)",
+          "Testing expected correct functionality of the globally defined "
+          "minus operator.") {
+    const int64_t lower_limit{-(1LL << 31)};
+    const int64_t upper_limit{(1LL << 31) - 1};
+    for (size_t i{}; i < number_of_tests; ++i) {
+        const int64_t first_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+        const int64_t second_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+
+        const big_integer bi1{first_operand};
+        const big_integer bi2{second_operand};
+
+        const big_integer bi_difference{bi1 - bi2};
+
+        const int64_t difference{first_operand - second_operand};
+
+        const std::string difference_str{std::to_string(difference)};
+        REQUIRE(difference_str == bi_difference.get_decimal_number());
+    }
+}
 
 TEST_CASE("big_integer operator*(const big_integer&, const big_integer&)",
-          "Testing the correct functionality of the globally defined "
-          "multiplication operator carried out on the "
-          "2 provided big_integer arguments.") {
-    org::atib::numerics::big_integer lhs{"123"};
-    org::atib::numerics::big_integer rhs{"255"};
-    org::atib::numerics::big_integer product{lhs * rhs};
-    REQUIRE(product.get_decimal_number() == "31365"s);
+          "Testing expected correct functionality of the globally defined "
+          "multiplication operator.") {
+    const int64_t lower_limit{-(1LL << 24)};
+    const int64_t upper_limit{(1LL << 24) - 1};
 
-    org::atib::numerics::big_integer bi1{"361231416"};
-    org::atib::numerics::big_integer bi2{"12313198"};
-    product = bi1 * bi2;
-    REQUIRE(product.get_decimal_number() == "4447913949028368"s);
+    for (size_t i{}; i < number_of_tests; ++i) {
+        const int64_t first_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+        const int64_t second_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+
+        const big_integer bi1{first_operand};
+        const big_integer bi2{second_operand};
+
+        const big_integer bi_product{bi1 * bi2};
+
+        const int64_t product{first_operand * second_operand};
+
+        const std::string product_str{std::to_string(product)};
+        REQUIRE(product_str == bi_product.get_decimal_number());
+    }
+}
+
+TEST_CASE("big_integer operator/(const big_integer&, const big_integer&)",
+          "Testing expected correct functionality of the globally defined "
+          "division operator function.") {
+    const int64_t lower_limit{-(1LL << 31)};
+    const int64_t upper_limit{(1LL << 31) - 1};
+    for (size_t i{}; i < number_of_tests; ++i) {
+        const int64_t first_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+        const int64_t second_operand{
+                get_random_integral_value(lower_limit, upper_limit)};
+
+        const big_integer bi1{first_operand};
+        const big_integer bi2{second_operand};
+
+        const big_integer bi_divison{bi1 / bi2};
+
+        const int64_t divison{first_operand / second_operand};
+
+        const std::string divison_str{std::to_string(divison)};
+        REQUIRE(divison_str == bi_divison.get_decimal_number());
+    }
+}
+
+TEST_CASE("big_integer operator%(const big_integer&, const big_integer&)",
+          "Testing expected correct functionality of the globally defined "
+          "modulus operator function.") {
+    const uint64_t lower_limit{};
+    const uint64_t upper_limit{1LL << 32};
+    for (size_t i{}; i < number_of_tests; ++i) {
+        const uint64_t first_operand =
+                get_random_integral_value(lower_limit, upper_limit);
+        const uint64_t second_operand =
+                get_random_integral_value(lower_limit, upper_limit);
+
+        const big_integer bi1{first_operand};
+        const big_integer bi2{second_operand};
+
+        const big_integer bi_remainder{bi1 % bi2};
+
+        const uint64_t remainder{first_operand % second_operand};
+
+        const std::string remainder_str{std::to_string(remainder)};
+        REQUIRE(remainder_str == bi_remainder.get_decimal_number());
+    }
 }

@@ -2362,7 +2362,7 @@ namespace Catch {
 #define CATCH_PLATFORM_LINUX
 #elif defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || \
     defined(_MSC_VER)
-#define CATCH_PLATFORM_WINDOWS
+                                                                                                                        #define CATCH_PLATFORM_WINDOWS
 #if !defined(NOMINMAX) && !defined(CATCH_CONFIG_NO_NOMINMAX)
 #define CATCH_DEFINES_NOMINMAX
 #endif
@@ -2396,18 +2396,18 @@ namespace Catch {
 #endif
 
 #elif defined(CATCH_PLATFORM_LINUX)
-                                                                                                                        // If we can use inline assembler, do it because this allows us to break
+// If we can use inline assembler, do it because this allows us to break
 // directly at the location of the failing check instead of breaking inside
 // raise() called from it, i.e. one stack frame below.
 #if defined(__GNUC__) && (defined(__i386) || defined(__x86_64))
 #define CATCH_TRAP() asm volatile("int $3") /* NOLINT */
 #else                                       // Fall back to the generic way.
-#include <signal.h>
+                                                                                                                        #include <signal.h>
 
 #define CATCH_TRAP() raise(SIGTRAP)
 #endif
 #elif defined(_MSC_VER)
-#define CATCH_TRAP() __debugbreak()
+                                                                                                                        #define CATCH_TRAP() __debugbreak()
 #elif defined(__MINGW32__)
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define CATCH_TRAP() DebugBreak()
@@ -2806,6 +2806,7 @@ namespace Catch {
 #define TWOBLUECUBES_CATCH_GENERATORS_HPP_INCLUDED
 
 #include <stdlib.h>
+
 #include <string>
 #include <vector>
 
@@ -5294,9 +5295,9 @@ STITCH_CLARA_OPEN_NAMESPACE
                     case '-':
                         return MaybeShortOpt;
 #ifdef CLARA_PLATFORM_WINDOWS
-                    case '/':
-                        from = i + 1;
-                        return SlashOpt;
+                                                                                                                                            case '/':
+        from = i + 1;
+        return SlashOpt;
 #endif
                     default:
                         from = i;
@@ -6805,6 +6806,7 @@ namespace Catch {
 #define TWOBLUECUBES_CATCH_TEST_CASE_TRACKER_HPP_INCLUDED
 
 #include <assert.h>
+
 #include <algorithm>
 #include <stdexcept>
 #include <string>
@@ -7188,9 +7190,8 @@ namespace Catch {
 
 }  // namespace Catch
 
-#if defined( \
-    CATCH_PLATFORM_WINDOWS)  /////////////////////////////////////////
-// #included from: catch_windows_h_proxy.h
+#if defined(CATCH_PLATFORM_WINDOWS)  /////////////////////////////////////////
+                                                                                                                        // #included from: catch_windows_h_proxy.h
 
 #define TWOBLUECUBES_CATCH_WINDOWS_H_PROXY_H_INCLUDED
 
@@ -7219,14 +7220,14 @@ namespace Catch {
 #if !defined(CATCH_CONFIG_WINDOWS_SEH)
 
 namespace Catch {
-    struct FatalConditionHandler {
-        void reset() {}
-    };
+struct FatalConditionHandler {
+  void reset() {}
+};
 }  // namespace Catch
 
 #else  // CATCH_CONFIG_WINDOWS_SEH is defined
 
-                                                                                                                        namespace Catch {
+namespace Catch {
 
 struct SignalDefs {
   DWORD id;
@@ -7296,11 +7297,11 @@ PVOID FatalConditionHandler::exceptionHandlerHandle = CATCH_NULL;
 #endif  // CATCH_CONFIG_WINDOWS_SEH
 
 #else  // Not Windows - assumed to be POSIX compatible
-                                                                                                                        // //////////////////////////
+// //////////////////////////
 
 #if !defined(CATCH_CONFIG_POSIX_SIGNALS)
 
-namespace Catch {
+                                                                                                                        namespace Catch {
 struct FatalConditionHandler {
   void reset() {}
 };
@@ -7312,77 +7313,78 @@ struct FatalConditionHandler {
 
 namespace Catch {
 
-struct SignalDefs {
-  int id;
-  const char* name;
-};
-extern SignalDefs signalDefs[];
-SignalDefs signalDefs[] = {
-    {SIGINT, "SIGINT - Terminal interrupt signal"},
-    {SIGILL, "SIGILL - Illegal instruction signal"},
-    {SIGFPE, "SIGFPE - Floating point error signal"},
-    {SIGSEGV, "SIGSEGV - Segmentation violation signal"},
-    {SIGTERM, "SIGTERM - Termination request signal"},
-    {SIGABRT, "SIGABRT - Abort (abnormal termination) signal"}};
+    struct SignalDefs {
+        int id;
+        const char *name;
+    };
+    extern SignalDefs signalDefs[];
+    SignalDefs signalDefs[] = {
+            {SIGINT,  "SIGINT - Terminal interrupt signal"},
+            {SIGILL,  "SIGILL - Illegal instruction signal"},
+            {SIGFPE,  "SIGFPE - Floating point error signal"},
+            {SIGSEGV, "SIGSEGV - Segmentation violation signal"},
+            {SIGTERM, "SIGTERM - Termination request signal"},
+            {SIGABRT, "SIGABRT - Abort (abnormal termination) signal"}};
 
-struct FatalConditionHandler {
-  static bool isSet;
-  static struct sigaction
-      oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)];
-  static stack_t oldSigStack;
-  static char altStackMem[SIGSTKSZ];
+    struct FatalConditionHandler {
+        static bool isSet;
+        static struct sigaction
+                oldSigActions[sizeof(signalDefs) / sizeof(SignalDefs)];
+        static stack_t oldSigStack;
+        static char altStackMem[SIGSTKSZ];
 
-  static void handleSignal(int sig) {
-    std::string name = "<unknown signal>";
-    for (std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
-      SignalDefs& def = signalDefs[i];
-      if (sig == def.id) {
-        name = def.name;
-        break;
-      }
-    }
-    reset();
-    reportFatal(name);
-    raise(sig);
-  }
+        static void handleSignal(int sig) {
+            std::string name = "<unknown signal>";
+            for (std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+                SignalDefs &def = signalDefs[i];
+                if (sig == def.id) {
+                    name = def.name;
+                    break;
+                }
+            }
+            reset();
+            reportFatal(name);
+            raise(sig);
+        }
 
-  FatalConditionHandler() {
-    isSet = true;
-    stack_t sigStack;
-    sigStack.ss_sp = altStackMem;
-    sigStack.ss_size = SIGSTKSZ;
-    sigStack.ss_flags = 0;
-    sigaltstack(&sigStack, &oldSigStack);
-    struct sigaction sa = {0};
+        FatalConditionHandler() {
+            isSet = true;
+            stack_t sigStack;
+            sigStack.ss_sp = altStackMem;
+            sigStack.ss_size = SIGSTKSZ;
+            sigStack.ss_flags = 0;
+            sigaltstack(&sigStack, &oldSigStack);
+            struct sigaction sa = {0};
 
-    sa.sa_handler = handleSignal;
-    sa.sa_flags = SA_ONSTACK;
-    for (std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
-      sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
-    }
-  }
+            sa.sa_handler = handleSignal;
+            sa.sa_flags = SA_ONSTACK;
+            for (std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs); ++i) {
+                sigaction(signalDefs[i].id, &sa, &oldSigActions[i]);
+            }
+        }
 
-  ~FatalConditionHandler() { reset(); }
-  static void reset() {
-    if (isSet) {
-      // Set signals back to previous values -- hopefully nobody overwrote them
-      // in the meantime
-      for (std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs);
-           ++i) {
-        sigaction(signalDefs[i].id, &oldSigActions[i], CATCH_NULL);
-      }
-      // Return the old stack
-      sigaltstack(&oldSigStack, CATCH_NULL);
-      isSet = false;
-    }
-  }
-};
+        ~FatalConditionHandler() { reset(); }
 
-bool FatalConditionHandler::isSet = false;
-struct sigaction FatalConditionHandler::oldSigActions[sizeof(signalDefs) /
-                                                      sizeof(SignalDefs)] = {};
-stack_t FatalConditionHandler::oldSigStack = {};
-char FatalConditionHandler::altStackMem[SIGSTKSZ] = {};
+        static void reset() {
+            if (isSet) {
+                // Set signals back to previous values -- hopefully nobody overwrote them
+                // in the meantime
+                for (std::size_t i = 0; i < sizeof(signalDefs) / sizeof(SignalDefs);
+                     ++i) {
+                    sigaction(signalDefs[i].id, &oldSigActions[i], CATCH_NULL);
+                }
+                // Return the old stack
+                sigaltstack(&oldSigStack, CATCH_NULL);
+                isSet = false;
+            }
+        }
+    };
+
+    bool FatalConditionHandler::isSet = false;
+    struct sigaction FatalConditionHandler::oldSigActions[sizeof(signalDefs) /
+                                                          sizeof(SignalDefs)] = {};
+    stack_t FatalConditionHandler::oldSigStack = {};
+    char FatalConditionHandler::altStackMem[SIGSTKSZ] = {};
 
 }  // namespace Catch
 
@@ -7813,6 +7815,7 @@ namespace Catch {
 }  // namespace Catch
 
 #include <stdlib.h>
+
 #include <fstream>
 #include <limits>
 
@@ -8602,7 +8605,7 @@ namespace Catch {
 
 #ifndef CATCH_CONFIG_NOSTDOUT  // If you #define this you must implement these
 
-    // functions
+// functions
     std::ostream &cout() {
         return std::cout;
     }
@@ -8767,155 +8770,156 @@ namespace Catch {
 #if defined( \
     CATCH_CONFIG_COLOUR_WINDOWS)  /////////////////////////////////////////
 
+                                                                                                                        namespace Catch {
+namespace {
+
+class Win32ColourImpl : public IColourImpl {
+ public:
+  Win32ColourImpl() : stdoutHandle(GetStdHandle(STD_OUTPUT_HANDLE)) {
+    CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+    GetConsoleScreenBufferInfo(stdoutHandle, &csbiInfo);
+    originalForegroundAttributes =
+        csbiInfo.wAttributes & ~(BACKGROUND_GREEN | BACKGROUND_RED |
+                                 BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+    originalBackgroundAttributes =
+        csbiInfo.wAttributes & ~(FOREGROUND_GREEN | FOREGROUND_RED |
+                                 FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+  }
+
+  virtual void use(Colour::Code _colourCode) {
+    switch (_colourCode) {
+      case Colour::None:
+        return setTextAttribute(originalForegroundAttributes);
+      case Colour::White:
+        return setTextAttribute(FOREGROUND_GREEN | FOREGROUND_RED |
+                                FOREGROUND_BLUE);
+      case Colour::Red:
+        return setTextAttribute(FOREGROUND_RED);
+      case Colour::Green:
+        return setTextAttribute(FOREGROUND_GREEN);
+      case Colour::Blue:
+        return setTextAttribute(FOREGROUND_BLUE);
+      case Colour::Cyan:
+        return setTextAttribute(FOREGROUND_BLUE | FOREGROUND_GREEN);
+      case Colour::Yellow:
+        return setTextAttribute(FOREGROUND_RED | FOREGROUND_GREEN);
+      case Colour::Grey:
+        return setTextAttribute(0);
+
+      case Colour::LightGrey:
+        return setTextAttribute(FOREGROUND_INTENSITY);
+      case Colour::BrightRed:
+        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_RED);
+      case Colour::BrightGreen:
+        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN);
+      case Colour::BrightWhite:
+        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN |
+                                FOREGROUND_RED | FOREGROUND_BLUE);
+
+      case Colour::Bright:
+        throw std::logic_error("not a colour");
+    }
+  }
+
+ private:
+  void setTextAttribute(WORD _textAttribute) {
+    SetConsoleTextAttribute(stdoutHandle,
+                            _textAttribute | originalBackgroundAttributes);
+  }
+
+  HANDLE stdoutHandle;
+  WORD originalForegroundAttributes;
+  WORD originalBackgroundAttributes;
+};
+
+IColourImpl* platformColourInstance() {
+  static Win32ColourImpl s_instance;
+
+  Ptr<IConfig const> config = getCurrentContext().getConfig();
+  UseColour::YesOrNo colourMode =
+      config ? config->useColour() : UseColour::Auto;
+  if (colourMode == UseColour::Auto)
+    colourMode = !isDebuggerActive() ? UseColour::Yes : UseColour::No;
+  return colourMode == UseColour::Yes ? &s_instance : NoColourImpl::instance();
+}
+
+}  // namespace
+}  // end namespace Catch
+
+#elif defined(CATCH_CONFIG_COLOUR_ANSI)  //////////////////////////////////////
+
+#include <unistd.h>
+
 namespace Catch {
     namespace {
 
-        class Win32ColourImpl : public IColourImpl {
+// use POSIX/ ANSI console terminal codes
+// Thanks to Adam Strzelecki for original contribution
+// (http://github.com/nanoant)
+// https://github.com/philsquared/Catch/pull/131
+        class PosixColourImpl : public IColourImpl {
         public:
-            Win32ColourImpl() : stdoutHandle(GetStdHandle(STD_OUTPUT_HANDLE)) {
-                CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-                GetConsoleScreenBufferInfo(stdoutHandle, &csbiInfo);
-                originalForegroundAttributes =
-                        csbiInfo.wAttributes & ~(BACKGROUND_GREEN | BACKGROUND_RED |
-                                                 BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-                originalBackgroundAttributes =
-                        csbiInfo.wAttributes & ~(FOREGROUND_GREEN | FOREGROUND_RED |
-                                                 FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-            }
-
             virtual void use(Colour::Code _colourCode) {
                 switch (_colourCode) {
                     case Colour::None:
-                        return setTextAttribute(originalForegroundAttributes);
                     case Colour::White:
-                        return setTextAttribute(FOREGROUND_GREEN | FOREGROUND_RED |
-                                                FOREGROUND_BLUE);
+                        return setColour("[0m");
                     case Colour::Red:
-                        return setTextAttribute(FOREGROUND_RED);
+                        return setColour("[0;31m");
                     case Colour::Green:
-                        return setTextAttribute(FOREGROUND_GREEN);
+                        return setColour("[0;32m");
                     case Colour::Blue:
-                        return setTextAttribute(FOREGROUND_BLUE);
+                        return setColour("[0;34m");
                     case Colour::Cyan:
-                        return setTextAttribute(FOREGROUND_BLUE | FOREGROUND_GREEN);
+                        return setColour("[0;36m");
                     case Colour::Yellow:
-                        return setTextAttribute(FOREGROUND_RED | FOREGROUND_GREEN);
+                        return setColour("[0;33m");
                     case Colour::Grey:
-                        return setTextAttribute(0);
+                        return setColour("[1;30m");
 
                     case Colour::LightGrey:
-                        return setTextAttribute(FOREGROUND_INTENSITY);
+                        return setColour("[0;37m");
                     case Colour::BrightRed:
-                        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_RED);
+                        return setColour("[1;31m");
                     case Colour::BrightGreen:
-                        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN);
+                        return setColour("[1;32m");
                     case Colour::BrightWhite:
-                        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN |
-                                                FOREGROUND_RED | FOREGROUND_BLUE);
+                        return setColour("[1;37m");
 
                     case Colour::Bright:
                         throw std::logic_error("not a colour");
                 }
             }
 
-        private:
-            void setTextAttribute(WORD _textAttribute) {
-                SetConsoleTextAttribute(stdoutHandle,
-                                        _textAttribute | originalBackgroundAttributes);
+            static IColourImpl *instance() {
+                static PosixColourImpl s_instance;
+                return &s_instance;
             }
 
-            HANDLE stdoutHandle;
-            WORD originalForegroundAttributes;
-            WORD originalBackgroundAttributes;
+        private:
+            void setColour(const char *_escapeCode) {
+                Catch::cout() << '\033' << _escapeCode;
+            }
         };
 
         IColourImpl *platformColourInstance() {
-            static Win32ColourImpl s_instance;
-
+            ErrnoGuard guard;
             Ptr<IConfig const> config = getCurrentContext().getConfig();
             UseColour::YesOrNo colourMode =
                     config ? config->useColour() : UseColour::Auto;
             if (colourMode == UseColour::Auto)
-                colourMode = !isDebuggerActive() ? UseColour::Yes : UseColour::No;
-            return colourMode == UseColour::Yes ? &s_instance : NoColourImpl::instance();
+                colourMode = (!isDebuggerActive() && isatty(STDOUT_FILENO)) ? UseColour::Yes
+                                                                            : UseColour::No;
+            return colourMode == UseColour::Yes ? PosixColourImpl::instance()
+                                                : NoColourImpl::instance();
         }
 
     }  // namespace
 }  // end namespace Catch
 
-#elif defined(CATCH_CONFIG_COLOUR_ANSI)  //////////////////////////////////////
-
-                                                                                                                        #include <unistd.h>
-
-namespace Catch {
-namespace {
-
-// use POSIX/ ANSI console terminal codes
-// Thanks to Adam Strzelecki for original contribution
-// (http://github.com/nanoant)
-// https://github.com/philsquared/Catch/pull/131
-class PosixColourImpl : public IColourImpl {
- public:
-  virtual void use(Colour::Code _colourCode) {
-    switch (_colourCode) {
-      case Colour::None:
-      case Colour::White:
-        return setColour("[0m");
-      case Colour::Red:
-        return setColour("[0;31m");
-      case Colour::Green:
-        return setColour("[0;32m");
-      case Colour::Blue:
-        return setColour("[0;34m");
-      case Colour::Cyan:
-        return setColour("[0;36m");
-      case Colour::Yellow:
-        return setColour("[0;33m");
-      case Colour::Grey:
-        return setColour("[1;30m");
-
-      case Colour::LightGrey:
-        return setColour("[0;37m");
-      case Colour::BrightRed:
-        return setColour("[1;31m");
-      case Colour::BrightGreen:
-        return setColour("[1;32m");
-      case Colour::BrightWhite:
-        return setColour("[1;37m");
-
-      case Colour::Bright:
-        throw std::logic_error("not a colour");
-    }
-  }
-  static IColourImpl* instance() {
-    static PosixColourImpl s_instance;
-    return &s_instance;
-  }
-
- private:
-  void setColour(const char* _escapeCode) {
-    Catch::cout() << '\033' << _escapeCode;
-  }
-};
-
-IColourImpl* platformColourInstance() {
-  ErrnoGuard guard;
-  Ptr<IConfig const> config = getCurrentContext().getConfig();
-  UseColour::YesOrNo colourMode =
-      config ? config->useColour() : UseColour::Auto;
-  if (colourMode == UseColour::Auto)
-    colourMode = (!isDebuggerActive() && isatty(STDOUT_FILENO)) ? UseColour::Yes
-                                                                : UseColour::No;
-  return colourMode == UseColour::Yes ? PosixColourImpl::instance()
-                                      : NoColourImpl::instance();
-}
-
-}  // namespace
-}  // end namespace Catch
-
 #else  // not Windows or ANSI ///////////////////////////////////////////////
 
-namespace Catch {
+                                                                                                                        namespace Catch {
 
 static IColourImpl* platformColourInstance() {
   return NoColourImpl::instance();
@@ -9562,24 +9566,26 @@ namespace Catch {
     namespace {
 #ifdef CATCH_PLATFORM_WINDOWS
 
-        UInt64 getCurrentTicks() {
-            static UInt64 hz = 0, hzo = 0;
-            if (!hz) {
-                QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER *>(&hz));
-                QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER *>(&hzo));
-            }
-            UInt64 t;
-            QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER *>(&t));
-            return ((t - hzo) * 1000000) / hz;
-        }
+                                                                                                                                UInt64 getCurrentTicks() {
+  static UInt64 hz = 0, hzo = 0;
+  if (!hz) {
+    QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&hz));
+    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&hzo));
+  }
+  UInt64 t;
+  QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
+  return ((t - hzo) * 1000000) / hz;
+}
 
 #else
-                                                                                                                                UInt64 getCurrentTicks() {
-  timeval t;
-  gettimeofday(&t, CATCH_NULL);
-  return static_cast<UInt64>(t.tv_sec) * 1000000ull +
-         static_cast<UInt64>(t.tv_usec);
-}
+
+        UInt64 getCurrentTicks() {
+            timeval t;
+            gettimeofday(&t, CATCH_NULL);
+            return static_cast<UInt64>(t.tv_sec) * 1000000ull +
+                   static_cast<UInt64>(t.tv_usec);
+        }
+
 #endif
     }  // namespace
 
@@ -9827,7 +9833,8 @@ bool isDebuggerActive() {
 }  // namespace Catch
 
 #elif defined(CATCH_PLATFORM_LINUX)
-                                                                                                                        #include <fstream>
+
+#include <fstream>
 #include <string>
 
 namespace Catch {
@@ -9838,23 +9845,23 @@ namespace Catch {
 // "debugger" (which doesn't need to be gdb, of course, it could also
 // be strace, for example) in /proc/$PID/status, so just get it from
 // there instead.
-bool isDebuggerActive() {
-  // Libstdc++ has a bug, where std::ifstream sets errno to 0
-  // This way our users can properly assert over errno values
-  ErrnoGuard guard;
-  std::ifstream in("/proc/self/status");
-  for (std::string line; std::getline(in, line);) {
-    static const int PREFIX_LEN = 11;
-    if (line.compare(0, PREFIX_LEN, "TracerPid:\t") == 0) {
-      // We're traced if the PID is not 0 and no other PID starts
-      // with 0 digit, so it's enough to check for just a single
-      // character.
-      return line.length() > PREFIX_LEN && line[PREFIX_LEN] != '0';
-    }
-  }
+    bool isDebuggerActive() {
+        // Libstdc++ has a bug, where std::ifstream sets errno to 0
+        // This way our users can properly assert over errno values
+        ErrnoGuard guard;
+        std::ifstream in("/proc/self/status");
+        for (std::string line; std::getline(in, line);) {
+            static const int PREFIX_LEN = 11;
+            if (line.compare(0, PREFIX_LEN, "TracerPid:\t") == 0) {
+                // We're traced if the PID is not 0 and no other PID starts
+                // with 0 digit, so it's enough to check for just a single
+                // character.
+                return line.length() > PREFIX_LEN && line[PREFIX_LEN] != '0';
+            }
+        }
 
-  return false;
-}
+        return false;
+    }
 }  // namespace Catch
 #elif defined(_MSC_VER)
                                                                                                                         extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
@@ -9866,12 +9873,12 @@ bool isDebuggerActive() {
 #elif defined(__MINGW32__)
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 namespace Catch {
-    bool isDebuggerActive() {
-        return IsDebuggerPresent() != 0;
-    }
+bool isDebuggerActive() {
+  return IsDebuggerPresent() != 0;
+}
 }  // namespace Catch
 #else
-                                                                                                                        namespace Catch {
+namespace Catch {
 inline bool isDebuggerActive() {
   return false;
 }
@@ -9880,17 +9887,17 @@ inline bool isDebuggerActive() {
 
 #ifdef CATCH_PLATFORM_WINDOWS
 
-namespace Catch {
-    void writeToDebugConsole(std::string const &text) {
-        ::OutputDebugStringA(text.c_str());
-    }
-}  // namespace Catch
-#else
                                                                                                                         namespace Catch {
 void writeToDebugConsole(std::string const& text) {
-  // !TBD: Need a version for Mac/ XCode and other IDEs
-  Catch::cout() << text;
+  ::OutputDebugStringA(text.c_str());
 }
+}  // namespace Catch
+#else
+namespace Catch {
+    void writeToDebugConsole(std::string const &text) {
+        // !TBD: Need a version for Mac/ XCode and other IDEs
+        Catch::cout() << text;
+    }
 }  // namespace Catch
 #endif  // Platform
 
@@ -10576,6 +10583,7 @@ namespace Catch {
 #define TWOBLUECUBES_CATCH_REPORTER_BASES_HPP_INCLUDED
 
 #include <assert.h>
+
 #include <cfloat>
 #include <cstdio>
 #include <cstring>

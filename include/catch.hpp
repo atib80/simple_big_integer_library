@@ -2362,7 +2362,7 @@ namespace Catch {
 #define CATCH_PLATFORM_LINUX
 #elif defined(WIN32) || defined(__WIN32__) || defined(_WIN32) || \
     defined(_MSC_VER)
-                                                                                                                        #define CATCH_PLATFORM_WINDOWS
+#define CATCH_PLATFORM_WINDOWS
 #if !defined(NOMINMAX) && !defined(CATCH_CONFIG_NO_NOMINMAX)
 #define CATCH_DEFINES_NOMINMAX
 #endif
@@ -2402,12 +2402,12 @@ namespace Catch {
 #if defined(__GNUC__) && (defined(__i386) || defined(__x86_64))
 #define CATCH_TRAP() asm volatile("int $3") /* NOLINT */
 #else                                       // Fall back to the generic way.
-                                                                                                                        #include <signal.h>
+#include <signal.h>
 
 #define CATCH_TRAP() raise(SIGTRAP)
 #endif
 #elif defined(_MSC_VER)
-                                                                                                                        #define CATCH_TRAP() __debugbreak()
+#define CATCH_TRAP() __debugbreak()
 #elif defined(__MINGW32__)
 extern "C" __declspec(dllimport) void __stdcall DebugBreak();
 #define CATCH_TRAP() DebugBreak()
@@ -5295,9 +5295,9 @@ STITCH_CLARA_OPEN_NAMESPACE
                     case '-':
                         return MaybeShortOpt;
 #ifdef CLARA_PLATFORM_WINDOWS
-                                                                                                                                            case '/':
-        from = i + 1;
-        return SlashOpt;
+                    case '/':
+                        from = i + 1;
+                        return SlashOpt;
 #endif
                     default:
                         from = i;
@@ -7191,7 +7191,7 @@ namespace Catch {
 }  // namespace Catch
 
 #if defined(CATCH_PLATFORM_WINDOWS)  /////////////////////////////////////////
-                                                                                                                        // #included from: catch_windows_h_proxy.h
+// #included from: catch_windows_h_proxy.h
 
 #define TWOBLUECUBES_CATCH_WINDOWS_H_PROXY_H_INCLUDED
 
@@ -7220,9 +7220,9 @@ namespace Catch {
 #if !defined(CATCH_CONFIG_WINDOWS_SEH)
 
 namespace Catch {
-struct FatalConditionHandler {
-  void reset() {}
-};
+    struct FatalConditionHandler {
+        void reset() {}
+    };
 }  // namespace Catch
 
 #else  // CATCH_CONFIG_WINDOWS_SEH is defined
@@ -8770,80 +8770,80 @@ namespace Catch {
 #if defined( \
     CATCH_CONFIG_COLOUR_WINDOWS)  /////////////////////////////////////////
 
-                                                                                                                        namespace Catch {
-namespace {
+namespace Catch {
+    namespace {
 
-class Win32ColourImpl : public IColourImpl {
- public:
-  Win32ColourImpl() : stdoutHandle(GetStdHandle(STD_OUTPUT_HANDLE)) {
-    CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
-    GetConsoleScreenBufferInfo(stdoutHandle, &csbiInfo);
-    originalForegroundAttributes =
-        csbiInfo.wAttributes & ~(BACKGROUND_GREEN | BACKGROUND_RED |
-                                 BACKGROUND_BLUE | BACKGROUND_INTENSITY);
-    originalBackgroundAttributes =
-        csbiInfo.wAttributes & ~(FOREGROUND_GREEN | FOREGROUND_RED |
-                                 FOREGROUND_BLUE | FOREGROUND_INTENSITY);
-  }
+        class Win32ColourImpl : public IColourImpl {
+        public:
+            Win32ColourImpl() : stdoutHandle(GetStdHandle(STD_OUTPUT_HANDLE)) {
+                CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+                GetConsoleScreenBufferInfo(stdoutHandle, &csbiInfo);
+                originalForegroundAttributes =
+                        csbiInfo.wAttributes & ~(BACKGROUND_GREEN | BACKGROUND_RED |
+                                                 BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+                originalBackgroundAttributes =
+                        csbiInfo.wAttributes & ~(FOREGROUND_GREEN | FOREGROUND_RED |
+                                                 FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+            }
 
-  virtual void use(Colour::Code _colourCode) {
-    switch (_colourCode) {
-      case Colour::None:
-        return setTextAttribute(originalForegroundAttributes);
-      case Colour::White:
-        return setTextAttribute(FOREGROUND_GREEN | FOREGROUND_RED |
-                                FOREGROUND_BLUE);
-      case Colour::Red:
-        return setTextAttribute(FOREGROUND_RED);
-      case Colour::Green:
-        return setTextAttribute(FOREGROUND_GREEN);
-      case Colour::Blue:
-        return setTextAttribute(FOREGROUND_BLUE);
-      case Colour::Cyan:
-        return setTextAttribute(FOREGROUND_BLUE | FOREGROUND_GREEN);
-      case Colour::Yellow:
-        return setTextAttribute(FOREGROUND_RED | FOREGROUND_GREEN);
-      case Colour::Grey:
-        return setTextAttribute(0);
+            virtual void use(Colour::Code _colourCode) {
+                switch (_colourCode) {
+                    case Colour::None:
+                        return setTextAttribute(originalForegroundAttributes);
+                    case Colour::White:
+                        return setTextAttribute(FOREGROUND_GREEN | FOREGROUND_RED |
+                                                FOREGROUND_BLUE);
+                    case Colour::Red:
+                        return setTextAttribute(FOREGROUND_RED);
+                    case Colour::Green:
+                        return setTextAttribute(FOREGROUND_GREEN);
+                    case Colour::Blue:
+                        return setTextAttribute(FOREGROUND_BLUE);
+                    case Colour::Cyan:
+                        return setTextAttribute(FOREGROUND_BLUE | FOREGROUND_GREEN);
+                    case Colour::Yellow:
+                        return setTextAttribute(FOREGROUND_RED | FOREGROUND_GREEN);
+                    case Colour::Grey:
+                        return setTextAttribute(0);
 
-      case Colour::LightGrey:
-        return setTextAttribute(FOREGROUND_INTENSITY);
-      case Colour::BrightRed:
-        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_RED);
-      case Colour::BrightGreen:
-        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN);
-      case Colour::BrightWhite:
-        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN |
-                                FOREGROUND_RED | FOREGROUND_BLUE);
+                    case Colour::LightGrey:
+                        return setTextAttribute(FOREGROUND_INTENSITY);
+                    case Colour::BrightRed:
+                        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_RED);
+                    case Colour::BrightGreen:
+                        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN);
+                    case Colour::BrightWhite:
+                        return setTextAttribute(FOREGROUND_INTENSITY | FOREGROUND_GREEN |
+                                                FOREGROUND_RED | FOREGROUND_BLUE);
 
-      case Colour::Bright:
-        throw std::logic_error("not a colour");
-    }
-  }
+                    case Colour::Bright:
+                        throw std::logic_error("not a colour");
+                }
+            }
 
- private:
-  void setTextAttribute(WORD _textAttribute) {
-    SetConsoleTextAttribute(stdoutHandle,
-                            _textAttribute | originalBackgroundAttributes);
-  }
+        private:
+            void setTextAttribute(WORD _textAttribute) {
+                SetConsoleTextAttribute(stdoutHandle,
+                                        _textAttribute | originalBackgroundAttributes);
+            }
 
-  HANDLE stdoutHandle;
-  WORD originalForegroundAttributes;
-  WORD originalBackgroundAttributes;
-};
+            HANDLE stdoutHandle;
+            WORD originalForegroundAttributes;
+            WORD originalBackgroundAttributes;
+        };
 
-IColourImpl* platformColourInstance() {
-  static Win32ColourImpl s_instance;
+        IColourImpl *platformColourInstance() {
+            static Win32ColourImpl s_instance;
 
-  Ptr<IConfig const> config = getCurrentContext().getConfig();
-  UseColour::YesOrNo colourMode =
-      config ? config->useColour() : UseColour::Auto;
-  if (colourMode == UseColour::Auto)
-    colourMode = !isDebuggerActive() ? UseColour::Yes : UseColour::No;
-  return colourMode == UseColour::Yes ? &s_instance : NoColourImpl::instance();
-}
+            Ptr<IConfig const> config = getCurrentContext().getConfig();
+            UseColour::YesOrNo colourMode =
+                    config ? config->useColour() : UseColour::Auto;
+            if (colourMode == UseColour::Auto)
+                colourMode = !isDebuggerActive() ? UseColour::Yes : UseColour::No;
+            return colourMode == UseColour::Yes ? &s_instance : NoColourImpl::instance();
+        }
 
-}  // namespace
+    }  // namespace
 }  // end namespace Catch
 
 #elif defined(CATCH_CONFIG_COLOUR_ANSI)  //////////////////////////////////////
@@ -9566,16 +9566,16 @@ namespace Catch {
     namespace {
 #ifdef CATCH_PLATFORM_WINDOWS
 
-                                                                                                                                UInt64 getCurrentTicks() {
-  static UInt64 hz = 0, hzo = 0;
-  if (!hz) {
-    QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER*>(&hz));
-    QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&hzo));
-  }
-  UInt64 t;
-  QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER*>(&t));
-  return ((t - hzo) * 1000000) / hz;
-}
+        UInt64 getCurrentTicks() {
+            static UInt64 hz = 0, hzo = 0;
+            if (!hz) {
+                QueryPerformanceFrequency(reinterpret_cast<LARGE_INTEGER *>(&hz));
+                QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER *>(&hzo));
+            }
+            UInt64 t;
+            QueryPerformanceCounter(reinterpret_cast<LARGE_INTEGER *>(&t));
+            return ((t - hzo) * 1000000) / hz;
+        }
 
 #else
 
@@ -9873,9 +9873,9 @@ bool isDebuggerActive() {
 #elif defined(__MINGW32__)
 extern "C" __declspec(dllimport) int __stdcall IsDebuggerPresent();
 namespace Catch {
-bool isDebuggerActive() {
-  return IsDebuggerPresent() != 0;
-}
+    bool isDebuggerActive() {
+        return IsDebuggerPresent() != 0;
+    }
 }  // namespace Catch
 #else
 namespace Catch {
@@ -9887,10 +9887,10 @@ inline bool isDebuggerActive() {
 
 #ifdef CATCH_PLATFORM_WINDOWS
 
-                                                                                                                        namespace Catch {
-void writeToDebugConsole(std::string const& text) {
-  ::OutputDebugStringA(text.c_str());
-}
+namespace Catch {
+    void writeToDebugConsole(std::string const &text) {
+        ::OutputDebugStringA(text.c_str());
+    }
 }  // namespace Catch
 #else
 namespace Catch {

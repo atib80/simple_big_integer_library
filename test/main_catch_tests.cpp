@@ -499,7 +499,7 @@ TEST_CASE("void reset(const std::string&)",
 
         REQUIRE(bi1.get_decimal_number() == random_number_str);
 
-        bi1.reset(number);
+        bi1.assign(number);
 
         switch (base) {
             case number_base::binary: {
@@ -1015,9 +1015,6 @@ TEST_CASE(
 }
 
 
-// TODO: testing operator<<(const size_t count), operator>>(const size_t count), operator<<=(const size_t count),
-// operator>>=(const size_t count)
-
 TEST_CASE(
         "big_integer operator<<(const size_t count) const",
         "Testing big_integer's operator<<(const size_t) public method") {
@@ -1233,7 +1230,6 @@ TEST_CASE(
 
         REQUIRE(std::to_string(first_operand) == bi1.get_decimal_number());
     }
-
 }
 
 TEST_CASE(
@@ -1283,5 +1279,43 @@ TEST_CASE(
         bi1 ^= bi2;
 
         REQUIRE(std::to_string(first_operand) == bi1.get_decimal_number());
+    }
+}
+
+TEST_CASE("Relational operators",
+          "Testing correct functionality of the globally defined "
+          "relational operator functions.") {
+
+    const big_integer bi_zero1{0};
+    const big_integer bi_zero2{};
+    REQUIRE(bi_zero1 == bi_zero2);
+
+    const big_integer bi_positive1{1234567890123456LL};
+    const big_integer bi_positive2{"1234567890123456"};
+    REQUIRE(bi_positive1 == bi_positive2);
+
+    const big_integer bi_negative1{-1234567890123456LL};
+    const big_integer bi_negative2{"-1234567890123456"};
+    REQUIRE(bi_negative1 == bi_negative2);
+
+    const int64_t lower_limit{std::numeric_limits<int64_t>::min()};
+    const int64_t upper_limit{std::numeric_limits<int64_t>::max()};
+    for (size_t i{}; i < number_of_tests; ++i) {
+        const int64_t first_operand{
+                get_random_integral_value(lower_limit, upper_limit)
+        };
+        const int64_t second_operand{
+                get_random_integral_value(lower_limit, upper_limit)
+        };
+
+        const big_integer bi1{first_operand};
+        const big_integer bi2{second_operand};
+
+        REQUIRE((first_operand < second_operand) == (bi1 < bi2));
+        REQUIRE((first_operand > second_operand) == (bi1 > bi2));
+        REQUIRE((first_operand <= second_operand) == (bi1 <= bi2));
+        REQUIRE((first_operand >= second_operand) == (bi1 >= bi2));
+        REQUIRE((first_operand == second_operand) == (bi1 == bi2));
+        REQUIRE((first_operand != second_operand) == (bi1 != bi2));
     }
 }

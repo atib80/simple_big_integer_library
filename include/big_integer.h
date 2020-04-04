@@ -106,7 +106,27 @@ namespace org {
 
                 ~big_integer() = default;
 
-                void reset(const std::string &);
+                void assign(const std::string &number);
+
+                void assign(std::vector<int> number_digits, const number_base base = number_base::decimal);
+
+                void assign(std::vector<bool> number_binary_digits);
+
+                template<
+                        typename NumberType,
+                        typename = std::enable_if_t<
+                                std::is_integral<NumberType>::value || std::is_floating_point<NumberType>::value>>
+                void assign(const NumberType number) {
+                    big_integer temp
+                            {
+                                    number,
+                                    std::conditional_t<std::is_integral<NumberType>::value,
+                                            std::true_type,
+                                            std::false_type>{}
+                            };
+
+                    this->swap(temp);
+                }
 
                 std::string get_big_integer(
                         const number_base base = number_base::decimal) const;
@@ -205,7 +225,7 @@ namespace org {
                     if (dot_pos != std::string::npos) {
                         value = value.substr(0, dot_pos);
                     }
-                    reset(value);
+                    assign(value);
                 }
 
                 void update_big_integer_string_representations();

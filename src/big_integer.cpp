@@ -324,7 +324,7 @@ std::istream &org::atib::numerics::operator>>(std::istream &is,
                                               big_integer &bi) {
     std::string line;
     is >> line;
-    bi.reset(line);
+    bi.assign(line);
     return is;
 }
 
@@ -1561,7 +1561,7 @@ byte big_integer::odds_to_one(const char ch) {
     }
 }
 
-void big_integer::reset(const std::string &number) {
+void big_integer::assign(const std::string &number) {
     if (!check_and_process_number_input_characters(number)) {
 #ifndef BIG_INTEGER_NO_THROW
         throw std::invalid_argument{
@@ -1576,6 +1576,16 @@ void big_integer::reset(const std::string &number) {
         convert_number_to_decimal_and_store();
         update_big_integer_string_representations();
     }
+}
+
+void big_integer::assign(std::vector<int> number_digits, const number_base base) {
+    big_integer temp{std::move(number_digits), base};
+    this->swap(temp);
+}
+
+void big_integer::assign(std::vector<bool> binary_number_digits) {
+    big_integer temp{std::move(binary_number_digits)};
+    this->swap(temp);
 }
 
 void big_integer::update_big_integer_string_representations() {
